@@ -31,7 +31,7 @@ resource "google_compute_instance" "default" {
 
   metadata_startup_script = file("startup_script.sh")
 
-  tags = ["http-server", "https-server"]
+  tags = ["ui-server"]
 
 ##  service_account {
 ##    email  = "default"

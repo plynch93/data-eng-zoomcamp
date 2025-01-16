@@ -23,6 +23,8 @@ def process_green_taxi(df):
 
     df.lpep_pickup_datetime = pd.to_datetime(df.lpep_pickup_datetime)
     df.lpep_dropoff_datetime = pd.to_datetime(df.lpep_dropoff_datetime)
+    df['pickup_date'] = df.lpep_pickup_datetime.dt.date
+    df['dropoff_date'] = df.lpep_dropoff_datetime.dt.date
     return df
 
 def process_zones(df):

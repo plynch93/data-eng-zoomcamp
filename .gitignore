@@ -170,9 +170,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Postgres mounts TODO move these to another location
-data_pgadmin/
-ny_taxi_postgres_data/
+# Remove any csv files TODO review this as course progesses
+*.csv*
 
 # Local .terraform directories
 **/.terraform/*
@@ -191,6 +190,7 @@ crash.*.log
 # to change depending on the environment.
 *.tfvars
 *.tfvars.json
+*variables.tf
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in

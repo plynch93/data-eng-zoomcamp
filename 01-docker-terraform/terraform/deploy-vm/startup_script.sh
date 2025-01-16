@@ -17,14 +17,22 @@ systemctl start docker
 systemctl enable docker
 
 # Install Terraform
-wget https://releases.hashicorp.com/terraform/1.10.3/terraform_1.10.3_linux_amd64.zip
-unzip terraform_1.10.3_linux_amd64.zip
-mv terraform /usr/local/bin/
+# Download Terraform binary
+wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip -O /tmp/terraform.zip
+
+# Unzip the binary
+unzip /tmp/terraform.zip -d /tmp/
+
+# Move the binary to /usr/local/bin
+mv /tmp/terraform /usr/local/bin/
+
+# Set proper permissions
+chmod 755 /usr/local/bin/terraform
 
 # Clone Zoomcamp repo
-git clone https://github.com/DataTalksClub/data-engineering-zoomcamp.git
+# git clone https://github.com/DataTalksClub/data-engineering-zoomcamp.git
 
 # Clean up
-rm ~/miniconda.sh terraform_1.10.3_linux_amd64.zip
+rm ~/miniconda.sh /tmp/terraform.zip
 
 echo "Startup script completed."
