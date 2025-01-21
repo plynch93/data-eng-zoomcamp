@@ -1,0 +1,18 @@
+id: for_loop_example
+namespace: company.team
+
+tasks:
+  - id: for_each
+    type: io.kestra.plugin.core.flow.ForEach
+    values: ["value 1", "value 2", "value 3"]
+    tasks:
+      - id: before_if
+        type: io.kestra.plugin.core.debug.Return
+        format: "Before if {{ taskrun.value }}"
+      - id: if
+        type: io.kestra.plugin.core.flow.If
+        condition: '{{ taskrun.value == "value 2" }}'
+        then:
+          - id: after_if
+            type: io.kestra.plugin.core.debug.Return
+            format: "After if {{ parent.taskrun.value }}"
