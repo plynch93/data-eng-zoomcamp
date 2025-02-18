@@ -30,6 +30,7 @@ Here's a comparison table for popular workflow orchestration tools like Kestra, 
 - **Dagster**: Focuses on data pipelines and lineage, excellent for teams managing data assets.
 
 ## Install with docker-compose
+This will install and launch postgres alongside kestra
 
 Download docker-compose file
 ```bash
@@ -41,3 +42,5 @@ Launch kestra
 ```bash
 docker-compose up -d
 ```
+
+## Install with docker

@@ -172,6 +172,7 @@ cython_debug/
 
 # Remove any csv files TODO review this as course progesses
 *.csv*
+*.parquet
 
 # Local .terraform directories
 **/.terraform/*
