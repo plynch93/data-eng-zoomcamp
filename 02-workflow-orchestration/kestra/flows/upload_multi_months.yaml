@@ -1,0 +1,93 @@
+id: upload_multi_months
+namespace: zoomcamp
+
+inputs:
+  - id: taxi
+    type: SELECT
+    displayName: Select taxi type
+    values: [yellow, green, fhv]
+    defaults: green
+
+  - id: year
+    type: SELECT
+    displayName: Select year
+    values: ["2019", "2020", "2021"]
+    defaults: "2019"
+    allowCustomValue: true
+
+  - id: months
+    type: MULTISELECT
+    displayName: Select month(s)
+    values: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    defaults: ["01"]
+
+tasks:
+  - id: for_each
+    type: io.kestra.plugin.core.flow.ForEach
+    values: "{{ inputs.months }}"
+    tasks:
+        - id: set_file_var
+          type: io.kestra.plugin.core.kv.Set
+          key: file
+          kvType: STRING
+          value: "{{ (inputs.taxi + '_tripdata_' + inputs.year + '-' + taskrun.value + '.csv') }}"
+
+        - id: set_gcs_file_var
+          type: io.kestra.plugin.core.kv.Set
+          key: gcs_file
+          kvType: STRING
+          value: "{{ 'gs://' + kv('GCP_BUCKET_NAME') + '/' + kv('file')}}"
+
+        - id: set_table_var
+          type: io.kestra.plugin.core.kv.Set
+          key: table
+          kvType: STRING
+          value: "{{kv('GCP_DATASET') + '.' + inputs.taxi + '_tripdata_' + inputs.year+ '_' + taskrun.value}}"
+
+        - id: set_month_var
+          type: io.kestra.plugin.core.kv.Set
+          key: month
+          kvType: STRING
+          value: "{{ taskrun.value }}"
+
+        - id: set_label
+          type: io.kestra.plugin.core.execution.Labels
+          labels:
+            file: "{{inputs.taxi}}_tripdata_{{inputs.year}}-{{taskrun.value}}.csv"
+            taxi: "{{inputs.taxi}}"
+
+        - id: list_gcs_files
+          type: io.kestra.plugin.gcp.gcs.List
+          from: "{{ 'gs://' + kv('GCP_BUCKET_NAME') + '/'}}"
+          regExp: "{{ '.*/' + kv('file')}}"
+
+        - id: if_file_is_uploaded
+          type: io.kestra.plugin.core.flow.If
+          condition: "{{outputs['list_gcs_files'][kv('month')].blobs | length == 0}}"
+          then:
+            - id: extract
+              type: io.kestra.plugin.scripts.shell.Commands
+              outputFiles:
+                - "*.csv"
+              taskRunner:
+                type: io.kestra.plugin.core.runner.Process
+              commands:
+                - wget -qO- https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{{inputs.taxi}}/{{render(kv('file'))}}.gz | gunzip > {{render(kv('file'))}}
+
+            - id: upload_to_gcs
+              type: io.kestra.plugin.gcp.gcs.Upload
+              from: "{{ outputs.extract[kv('month')].outputFiles[render(kv('file'))] }}"
+              to: "{{render(kv('gcs_file'))}}"
+
+            - id: purge_files
+              type: io.kestra.plugin.core.storage.PurgeCurrentExecutionFiles
+              description: If you'd like to explore Kestra outputs, disable it.
+              disabled: false
+
+pluginDefaults:
+  - type: io.kestra.plugin.gcp
+    values:
+      serviceAccount: "{{ secret('GCP_SERVICE_ACCOUNT') }}"
+      projectId: "{{kv('GCP_PROJECT_ID')}}"
+      location: "{{kv('GCP_LOCATION')}}"
+      bucket: "{{kv('GCP_BUCKET_NAME')}}"
