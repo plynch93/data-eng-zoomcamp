@@ -42,6 +42,8 @@ for table_name in table_names:
     external_config = bigquery.ExternalConfig("CSV")
     external_config.source_uris = [gcs_uris]
     external_config.schema = schema
+    external_config.options.skip_leading_rows = 1  # Skip header row
+    external_config.options.field_delimiter = ","
 
     # Create table object
     table = bigquery.Table(table_id)
