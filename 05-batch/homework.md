@@ -1,6 +1,8 @@
 This file contains the workings and answers for `Module 5 - Batch`.
 Questions can be found [here](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2025/05-batch/homework.md).
 
+For the below questions pyspark was used in areas where SQL could have been used as a learning experience. All working can be found in the Jupyter notebook [here](batch_homework.ipynb).
+
 ## Setup
 Using a VM hosted in GCP which has been deployed using terraform, the configuration can be found in the [main.tf](setup/main.tf) file. On startup the VM will run a script to install the required software which can be found [here](setup/startup_script.sh).
 
