@@ -213,3 +213,4 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+05-batch/setup/tfplan
